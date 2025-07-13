@@ -3,6 +3,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from app.routes.log_game import log_game_bp
 
+# Import the database models
+from app.models.database import Base, engine
+from app.models.gamelog import GameLog  # Make sure this matches your file name
+
 app = Flask(__name__)
 CORS(app)
 app.register_blueprint(log_game_bp, url_prefix="/api")
@@ -97,6 +101,9 @@ def make_move():
         'winningCells': [],
         'gameEnded': False
     })
+
+# Create the database tables at startup
+Base.metadata.create_all(bind=engine)
 
 if __name__ == '__main__':
     app.run(debug=True)

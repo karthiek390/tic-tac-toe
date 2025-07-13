@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GameCell from './GameCell';
 import GameStatus from './GameStatus';
-import { startNewGame, sendMove } from '../api/gameApi';
+import { startNewGame, sendMove,logGame  } from '../api/gameApi';
 
 
 type Player = 'X' | 'O' | null;
@@ -33,10 +33,24 @@ const GameBoard = () => {
   resetGame();
 }, []);
 
+// useEffect(() => {
+//   if (gameEnded) {
+//     const insights = generateFeedback();
+//     console.log("🧠 Post-game insights:", insights);
+//   }
+// }, [gameEnded]);
+
 useEffect(() => {
   if (gameEnded) {
     const insights = generateFeedback();
-    console.log("🧠 Post-game insights:", insights);
+
+    console.log("🎯 Game ended. Preparing to log:");
+    console.log("🧠 Insights:", insights);
+    console.log("📜 Move History:", moveHistory);
+
+    logGame(moveHistory, insights)
+      .then(() => console.log("✅ Game log sent"))
+      .catch((err) => console.error("❌ Failed to log game:", err));
   }
 }, [gameEnded]);
 

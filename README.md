@@ -19,38 +19,36 @@ Ideal for beginner-friendly exposure to **AI strategy, game logging, full-stack 
 
 ## 📁 Folder Structure
 
+```bash
 tic-tac-toe/
 ├── backend/
-│ ├── app/
-│ │ ├── main.py # Flask app with route registration
-│ │ ├── models/
-│ │ │ ├── database.py # SQLAlchemy DB engine + session setup
-│ │ │ └── game_log_model.py # GameLog SQLAlchemy model
-│ │ ├── routes/
-│ │ │ ├── game_routes.py # API routes for new game, move
-│ │ │ └── log_game.py # Route to save move logs to DB
-│ │ └── services/
-│ │ └── tic_tac_toe_engine.py # Core game logic + AI move
-│ ├── requirements.txt # Backend dependencies
+│   ├── app/
+│   │   ├── main.py                 # Flask app with route registration
+│   │   ├── models/
+│   │   │   ├── database.py         # SQLAlchemy DB engine + session setup
+│   │   │   └── game_log_model.py   # GameLog SQLAlchemy model
+│   │   ├── routes/
+│   │   │   ├── game_routes.py      # API routes for new game, move
+│   │   │   └── log_game.py         # Route to save move logs to DB
+│   │   └── services/
+│   │       └── tic_tac_toe_engine.py  # Core game logic + AI move
+│   └── requirements.txt           # Backend dependencies
 ├── frontend/
-│ ├── src/
-│ │ ├── api/
-│ │ │ └── gameApi.ts # Calls to backend API
-│ │ ├── components/
-│ │ │ ├── GameBoard.tsx # Main game UI and logic
-│ │ │ ├── GameCell.tsx # Single cell component
-│ │ │ ├── GameStatus.tsx # Game status display
-│ │ │ └── Header/Footer.tsx # UI layout
-│ │ ├── types/ # TypeScript types
-│ └── public/ / dist/ # Static and build files
-├── game_log_test.json # Sample payload for backend testing
-├── tictactoe.db # (Git-ignored) Local SQLite DB
-├── .gitignore # Git ignore rules (add backend rules too)
-└── README.md # You're here :)
-
-
----
-
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── gameApi.ts          # Calls to backend API
+│   │   ├── components/
+│   │   │   ├── GameBoard.tsx       # Main game UI and logic
+│   │   │   ├── GameCell.tsx        # Single cell component
+│   │   │   ├── GameStatus.tsx      # Game status display
+│   │   │   └── Header.tsx / Footer.tsx # UI layout
+│   │   ├── types/                  # TypeScript types
+│   └── public/ / dist/            # Static and build files
+├── game_log_test.json             # Sample payload for backend testing
+├── tictactoe.db                   # (Git-ignored) Local SQLite DB
+├── .gitignore                     # Git ignore rules (add backend rules too)
+└── README.md                      # You're here 🙂
+```
 ## ⚙️ Tech Stack
 
 | Layer       | Tools/Frameworks                             |
@@ -73,25 +71,28 @@ tic-tac-toe/
 
 ---
 
-🚀 Setup Instructions
-🔹 Backend Setup
+## 🚀 Setup Instructions
 
+### 🔧 Backend Setup (Flask + SQLite)
+
+```bash
 cd backend
 pip install -r requirements.txt
 PYTHONPATH=backend python -m app.main
+```
 
-Starts Flask app at http://localhost:5000
+## 🎨 Frontend Setup (React + Tailwind + Vite)
 
-Creates tictactoe.db on first run
-
-Logs game data via /api/log-game
-
-🔹 Frontend Setup
-
+```bash
 cd frontend
 npm install
 npm run dev
 
-🧑‍💻 Author
+```
+
+## 🧑‍💻 Author
+
+```bash
 Karthiek Duggirala
 Full-stack developer | AI Engineer | Game enthusiast
+```

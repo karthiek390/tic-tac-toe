@@ -7,12 +7,27 @@ import { startNewGame, sendMove } from '../api/gameApi';
 type Player = 'X' | 'O' | null;
 type Board = Player[][];
 
+type MoveRecord = {
+  boardBeforeMove: Board;
+  move: { row: number; col: number };
+  currentPlayer: Player;
+  resultAfterMove: {
+    board: Board;
+    winner: Player;
+    gameEnded: boolean;
+  };
+  timestamp: string;
+};
+
+
 const GameBoard = () => {
   const [board, setBoard] = useState<Board>([]);
   const [currentPlayer, setCurrentPlayer] = useState<'X' | 'O'>('X');
   const [winner, setWinner] = useState<Player>(null);
   const [winningCells, setWinningCells] = useState<number[][]>([]);
   const [gameEnded, setGameEnded] = useState(false);
+  const [moveHistory, setMoveHistory] = useState<MoveRecord[]>([]);
+
 
   useEffect(() => {
   resetGame();
@@ -61,15 +76,35 @@ const GameBoard = () => {
   if (board[row][col] || gameEnded) return;
 
   try {
-    const data = await sendMove(board, row, col, currentPlayer);
-    setBoard(data.board);
-    setCurrentPlayer(data.currentPlayer);
-    setWinner(data.winner);
-    setWinningCells(data.winningCells);
-    setGameEnded(data.gameEnded);
-  } catch (err) {
-    console.error('Move failed:', err);
+  const boardBefore = board.map(r => [...r]); // shallow copy for history
+
+  const data = await sendMove(board, row, col, currentPlayer);
+  setBoard(data.board);
+  setCurrentPlayer(data.currentPlayer);
+  setWinner(data.winner);
+  setWinningCells(data.winningCells);
+  setGameEnded(data.gameEnded);
+
+  if (currentPlayer === 'X') {
+    setMoveHistory(prev => [
+      ...prev,
+      {
+        boardBeforeMove: boardBefore,
+        move: { row, col },
+        currentPlayer,
+        resultAfterMove: {
+          board: data.board,
+          winner: data.winner,
+          gameEnded: data.gameEnded,
+        },
+        timestamp: new Date().toISOString(),
+      },
+    ]);
   }
+
+} catch (err) {
+  console.error('Move failed:', err);
+}
 };
 
 
@@ -129,6 +164,9 @@ const GameBoard = () => {
           </div>
         )}
       </div>
+      <pre className="text-white text-sm mt-4 max-w-2xl overflow-x-auto">
+  {JSON.stringify(moveHistory, null, 2)}
+</pre>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import random
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -52,15 +53,16 @@ def make_move():
     board = data['board']
     row = data['row']
     col = data['col']
-    current_player = data['currentPlayer']
+    current_player = data['currentPlayer']  # Should be 'X' (user)
 
+    # Human move
     if board[row][col] is not None:
         return jsonify({'error': 'Cell already filled'}), 400
-
     board[row][col] = current_player
-    winner, winning_cells = check_winner(board)
 
-    if winner:
+    # Check if human won
+    winner, winning_cells = check_winner(board)
+    if winner or is_full(board):
         return jsonify({
             'board': board,
             'currentPlayer': current_player,
@@ -69,19 +71,26 @@ def make_move():
             'gameEnded': True
         })
 
-    if is_full(board):
-        return jsonify({
-            'board': board,
-            'currentPlayer': current_player,
-            'winner': None,
-            'winningCells': [],
-            'gameEnded': True
-        })
+    # AI Move (simple random AI playing as 'O')
+    empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] is None]
+    if empty_cells:
+        ai_row, ai_col = random.choice(empty_cells)
+        board[ai_row][ai_col] = 'O'
 
-    next_player = 'O' if current_player == 'X' else 'X'
+        # Check if AI won
+        winner, winning_cells = check_winner(board)
+        if winner or is_full(board):
+            return jsonify({
+                'board': board,
+                'currentPlayer': 'X',
+                'winner': winner,
+                'winningCells': winning_cells,
+                'gameEnded': True
+            })
+
     return jsonify({
         'board': board,
-        'currentPlayer': next_player,
+        'currentPlayer': 'X',
         'winner': None,
         'winningCells': [],
         'gameEnded': False

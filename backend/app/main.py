@@ -1,9 +1,11 @@
 import random
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from app.routes.log_game import log_game_bp
 
 app = Flask(__name__)
 CORS(app)
+app.register_blueprint(log_game_bp, url_prefix="/api")
 
 # Constants
 BOARD_SIZE = 3

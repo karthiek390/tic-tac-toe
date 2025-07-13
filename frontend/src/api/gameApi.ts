@@ -1,9 +1,10 @@
 // frontend/src/api/gameApi.ts
+import { Player, Board, MoveRecord } from '../types/gameTypes';
 
 const API_URL = 'http://localhost:5000/api';
 
-export type Player = 'X' | 'O' | null;
-export type Board = Player[][];
+// export type Player = 'X' | 'O' | null;
+// export type Board = Player[][];
 
 export async function startNewGame() {
   const res = await fetch(`${API_URL}/new-game`, {
@@ -35,4 +36,14 @@ export async function sendMove(
   }
 
   return await res.json();
+}
+
+
+export async function logGame(moveHistory: MoveRecord[], insights: string[]) {
+  const res = await fetch(`${API_URL}/log-game`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ moveHistory, insights }),
+  });
+  return res.json();
 }

@@ -33,6 +33,14 @@ const GameBoard = () => {
   resetGame();
 }, []);
 
+useEffect(() => {
+  if (gameEnded) {
+    const insights = generateFeedback();
+    console.log("🧠 Post-game insights:", insights);
+  }
+}, [gameEnded]);
+
+
 
   const checkWinner = (board: Board): { winner: Player; winningCells: number[][] } => {
     const size = board.length;
@@ -126,6 +134,38 @@ const GameBoard = () => {
     return winningCells.some(([r, c]) => r === row && c === col);
   };
 
+  const generateFeedback = () => {
+  const feedback: string[] = [];
+
+
+  // Detect center avoidance
+  const centerMoves = moveHistory.filter(
+    move => move.move.row === 1 && move.move.col === 1
+  );
+  if (centerMoves.length === 0) {
+    feedback.push("You didn’t take the center even once — that’s usually a strong early move.");
+  }
+
+
+  // Detect first move preference
+  const firstMove = moveHistory[0];
+  if (firstMove && firstMove.currentPlayer === 'X') {
+    if (
+      (firstMove.move.row === 0 || firstMove.move.row === 2) &&
+      (firstMove.move.col === 0 || firstMove.move.col === 2)
+    ) {
+      feedback.push("Nice! You started in a corner, which is a strong opening.");
+    } else if (firstMove.move.row === 1 && firstMove.move.col === 1) {
+      feedback.push("Smart opening move! Taking the center gives you control.");
+    } else {
+      feedback.push("Your first move wasn’t ideal — center or corners are better.");
+    }
+  }
+
+
+  return feedback;
+};
+
   if (board.length === 0) {
   return <div className="text-white text-lg mt-10">Loading game...</div>;
 }
@@ -167,6 +207,16 @@ const GameBoard = () => {
       <pre className="text-white text-sm mt-4 max-w-2xl overflow-x-auto">
   {JSON.stringify(moveHistory, null, 2)}
 </pre>
+{gameEnded && (
+  <div className="mt-6 text-white bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-md">
+    <h2 className="text-xl font-semibold mb-2">🧠 Post-Game Feedback</h2>
+    <ul className="list-disc ml-6 space-y-1 text-yellow-300">
+      {generateFeedback().map((line, idx) => (
+        <li key={idx}>{line}</li>
+      ))}
+    </ul>
+  </div>
+)}
     </div>
   );
 };

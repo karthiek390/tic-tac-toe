@@ -27,11 +27,17 @@ const GameBoard = () => {
   const [winningCells, setWinningCells] = useState<number[][]>([]);
   const [gameEnded, setGameEnded] = useState(false);
   const [moveHistory, setMoveHistory] = useState<MoveRecord[]>([]);
+  const [showStartModal, setShowStartModal] = useState(true);
+  const [selectedStarter, setSelectedStarter] = useState<'X' | 'O'>('X');
 
 
+  // Trigger game reset only after player selection is made
   useEffect(() => {
-  resetGame();
-}, []);
+    if (!showStartModal) {
+      resetGame(selectedStarter);
+    }
+  }, [showStartModal]);
+
 
 // useEffect(() => {
 //   if (gameEnded) {
@@ -55,6 +61,10 @@ useEffect(() => {
 }, [gameEnded]);
 
 
+const handlePlayerSelection = (starter: 'X' | 'O') => {
+    setSelectedStarter(starter);
+    setShowStartModal(false);
+  };
 
   const checkWinner = (board: Board): { winner: Player; winningCells: number[][] } => {
     const size = board.length;
@@ -130,18 +140,20 @@ useEffect(() => {
 };
 
 
-  const resetGame = async () => {
-  try {
-    const data = await startNewGame();
-    setBoard(data.board);
-    setCurrentPlayer(data.currentPlayer);
-    setWinner(data.winner);
-    setWinningCells(data.winningCells);
-    setGameEnded(data.gameEnded);
-  } catch (err) {
-    console.error('Failed to reset game:', err);
-  }
-};
+  const resetGame = async (starter: 'X' | 'O') => {
+    console.log('Resetting game with starter:', starter);
+    try {
+      const data = await startNewGame(starter);
+      setBoard(data.board);
+      setCurrentPlayer(data.currentPlayer);
+      setWinner(data.winner);
+      setWinningCells(data.winningCells);
+      setGameEnded(data.gameEnded);
+      setMoveHistory([]);
+    } catch (err) {
+      console.error('Failed to reset game:', err);
+    }
+  };
 
 
   const isWinningCell = (row: number, col: number) => {
@@ -180,17 +192,66 @@ useEffect(() => {
   return feedback;
 };
 
-  if (board.length === 0) {
+  if (showStartModal) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center">
+      <div className="bg-gray-800 p-6 rounded-xl shadow-xl text-white text-center">
+        <h2 className="text-xl font-bold mb-4">Who should start the game?</h2>
+        <div className="space-x-4">
+          <button
+            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded"
+            onClick={() => handlePlayerSelection('X')}
+          >
+            I’ll start (X)
+          </button>
+          <button
+            className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded"
+            onClick={() => handlePlayerSelection('O')}
+          >
+            You start (O)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+if (board.length === 0) {
   return <div className="text-white text-lg mt-10">Loading game...</div>;
 }
 
   return (
     <div className="flex flex-col items-center space-y-8">
-      <GameStatus 
+      {/* Modal to choose who starts */}
+      {showStartModal && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center">
+          <div className="bg-gray-800 p-6 rounded-xl shadow-xl text-white text-center">
+            <h2 className="text-xl font-bold mb-4">Who should start the game?</h2>
+            <div className="space-x-4">
+              <button
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded"
+                onClick={() => handlePlayerSelection('X')}
+              >
+                I’ll start (X)
+              </button>
+              <button
+                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded"
+                onClick={() => handlePlayerSelection('O')}
+              >
+                You start (O)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <GameStatus
         currentPlayer={currentPlayer}
         winner={winner}
         gameEnded={gameEnded}
-        onReset={resetGame}
+        onReset={() => {
+          setShowStartModal(true);
+          setSelectedStarter(null);
+        }}
       />
 
       <div className="relative">

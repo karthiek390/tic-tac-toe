@@ -43,56 +43,65 @@ def is_full(board):
 # Route to start a new game
 @app.route('/api/new-game', methods=['POST'])
 def new_game():
+    data = request.get_json() or {}
+    first_player = data.get('firstPlayer', 'X')  # default to user (X) if not provided
+
+    game = TicTacToe(3)
+    game.current_player = first_player
+
+    # If AI (O) starts first, make the AI move before returning board
+    if first_player == 'O':
+        move = game.find_best_move()
+        if move:
+            game.make_move(move[0], move[1], 'O')
+
     return jsonify({
-        'board': create_empty_board(),
-        'currentPlayer': 'X',
-        'winner': None,
+        'board': game.board,
+        'currentPlayer': game.current_player,
+        'winner': game.winner,
         'winningCells': [],
-        'gameEnded': False
+        'gameEnded': game.winner is not None
     })
+
+
 
 # Route to handle moves
 @app.route('/api/move', methods=['POST'])
 def make_move():
     data = request.get_json()
     board = data['board']
-    row = data['row']
-    col = data['col']
+    row = data.get('row')
+    col = data.get('col')
     current_player = data['currentPlayer']  # Should be 'X' (user)
 
     # Human move
-    if board[row][col] is not None:
-        return jsonify({'error': 'Cell already filled'}), 400
-    board[row][col] = current_player
+    if row is not None and col is not None:
+        if not (0 <= row < 3 and 0 <= col < 3):
+            return jsonify({'error': 'Invalid move'}), 400
+        if board[row][col] is not None:
+            return jsonify({'error': 'Cell already filled'}), 400
+        board[row][col] = current_player
 
-    # Check if human won
-    winner, winning_cells = check_winner(board)
-    if winner or is_full(board):
-        return jsonify({
-            'board': board,
-            'currentPlayer': current_player,
-            'winner': winner,
-            'winningCells': winning_cells,
-            'gameEnded': True
-        })
+        winner, winning_cells = check_winner(board)
+        if winner or is_full(board):
+            return jsonify({
+                'board': board,
+                'currentPlayer': current_player,
+                'winner': winner,
+                'winningCells': winning_cells,
+                'gameEnded': True
+            })
 
-    # AI Move (simple random AI playing as 'O')
-
-    # empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] is None]
-    # if empty_cells:
-    #     ai_row, ai_col = random.choice(empty_cells)
-    #     board[ai_row][ai_col] = 'O'
-
+    # AI move
     game = TicTacToe(3)
-    game.board = board  # Keep 'None' as is for correct evaluation
+    game.board = board
     game.current_player = 'O'
     ai_move = game.find_best_move()
     if ai_move:
         ai_row, ai_col = ai_move
         game.make_move(ai_row, ai_col, 'O')
-        board = game.board  # Update board with AI move
+        board = game.board
 
-        # Check if AI won
         winner, winning_cells = check_winner(board)
         if winner or is_full(board):
             return jsonify({

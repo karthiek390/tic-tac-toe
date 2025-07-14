@@ -6,18 +6,33 @@ const API_URL = 'http://localhost:5000/api';
 // export type Player = 'X' | 'O' | null;
 // export type Board = Player[][];
 
-export async function startNewGame() {
-  const res = await fetch(`${API_URL}/new-game`, {
+// export async function startNewGame() {
+//   const res = await fetch(`${API_URL}/new-game`, {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//   });
+
+//   if (!res.ok) {
+//     throw new Error('Failed to start a new game');
+//   }
+
+//   return await res.json();
+// }
+
+export const startNewGame = async (firstPlayer: 'X' | 'O') => {
+  const response = await fetch(`${API_URL}/new-game`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', },
+    body: JSON.stringify({ firstPlayer }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to start a new game');
+  if (!response.ok) {
+    throw new Error('Failed to start new game');
   }
 
-  return await res.json();
-}
+  return response.json();
+};
+
 
 export async function sendMove(
   board: Board,

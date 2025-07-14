@@ -2,10 +2,9 @@ import random
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from app.routes.log_game import log_game_bp
-
-# Import the database models
 from app.models.database import Base, engine
-from app.models.gamelog import GameLog  # Make sure this matches your file name
+from app.models.gamelog import GameLog
+from app.services.tic_tac_toe_engine import TicTacToe
 
 app = Flask(__name__)
 CORS(app)
@@ -78,10 +77,20 @@ def make_move():
         })
 
     # AI Move (simple random AI playing as 'O')
-    empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] is None]
-    if empty_cells:
-        ai_row, ai_col = random.choice(empty_cells)
-        board[ai_row][ai_col] = 'O'
+
+    # empty_cells = [(i, j) for i in range(3) for j in range(3) if board[i][j] is None]
+    # if empty_cells:
+    #     ai_row, ai_col = random.choice(empty_cells)
+    #     board[ai_row][ai_col] = 'O'
+
+    game = TicTacToe(3)
+    game.board = board  # Keep 'None' as is for correct evaluation
+    game.current_player = 'O'
+    ai_move = game.find_best_move()
+    if ai_move:
+        ai_row, ai_col = ai_move
+        game.make_move(ai_row, ai_col, 'O')
+        board = game.board  # Update board with AI move
 
         # Check if AI won
         winner, winning_cells = check_winner(board)

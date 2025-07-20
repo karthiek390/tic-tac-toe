@@ -279,9 +279,12 @@ if (board.length === 0) {
           </div>
         )}
       </div>
-      <pre className="text-white text-sm mt-4 max-w-2xl overflow-x-auto">
+      {/*
+<pre className="text-white text-sm mt-4 max-w-2xl overflow-x-auto">
   {JSON.stringify(moveHistory, null, 2)}
 </pre>
+*/}
+{/*
 {gameEnded && (
   <div className="mt-6 text-white bg-gray-800 p-4 rounded-lg shadow-md w-full max-w-md">
     <h2 className="text-xl font-semibold mb-2">🧠 Post-Game Feedback</h2>
@@ -292,6 +295,7 @@ if (board.length === 0) {
     </ul>
   </div>
 )}
+*/}
     </div>
   );
 };

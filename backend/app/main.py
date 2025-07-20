@@ -5,6 +5,7 @@ from app.routes.log_game import log_game_bp
 from app.models.database import Base, engine
 from app.models.gamelog import GameLog
 from app.services.tic_tac_toe_engine import TicTacToe
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -124,5 +125,6 @@ def make_move():
 Base.metadata.create_all(bind=engine)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
 

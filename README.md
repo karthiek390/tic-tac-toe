@@ -19,7 +19,7 @@ Ideal for beginner-friendly exposure to **AI strategy, game logging, full-stack 
 
 ## 🌐 Live Demo
 
-- 🔗 Frontend (Vercel): [https://tic-tac-toe-ai-coach.vercel.app](https://tic-tac-toe-ai-coach.vercel.app)
+- 🔗 Frontend (Vercel): [https://tic-tac-toe-roan-nine-56.vercel.app/](https://tic-tac-toe-roan-nine-56.vercel.app/)
 - 🔗 Backend (Render): [https://tic-tac-toe-backend-pmiy.onrender.com](https://tic-tac-toe-backend-pmiy.onrender.com)
 
 > The frontend and backend are deployed and connected in production.

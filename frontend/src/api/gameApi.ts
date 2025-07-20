@@ -1,7 +1,7 @@
 // frontend/src/api/gameApi.ts
 import { Player, Board, MoveRecord } from '../types/gameTypes';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // export type Player = 'X' | 'O' | null;
 // export type Board = Player[][];

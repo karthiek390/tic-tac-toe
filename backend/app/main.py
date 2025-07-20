@@ -41,6 +41,10 @@ def check_winner(board):
 def is_full(board):
     return all(cell is not None for row in board for cell in row)
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    return 'OK', 200
+
 # Route to start a new game
 @app.route('/api/new-game', methods=['POST'])
 def new_game():

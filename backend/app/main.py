@@ -5,6 +5,7 @@ from app.routes.log_game import log_game_bp
 from app.models.database import Base, engine
 from app.models.gamelog import GameLog
 from app.services.tic_tac_toe_engine import TicTacToe
+from app.services.ai_strategy_controller import StrategyController
 import os
 
 app = Flask(__name__)
@@ -50,13 +51,15 @@ def health_check():
 def new_game():
     data = request.get_json() or {}
     first_player = data.get('firstPlayer', 'X')  # default to user (X) if not provided
+    strategy_id = data.get('strategy_id', 'center_first')
 
-    game = TicTacToe(3)
+    game = TicTacToe(3, strategy_id=strategy_id)
     game.current_player = first_player
 
     # If AI (O) starts first, make the AI move before returning board
     if first_player == 'O':
-        move = game.find_best_move()
+        strategy = StrategyController.get_strategy(strategy_id)
+        move = strategy.choose_move(game.board, 'O')
         if move:
             game.make_move(move[0], move[1], 'O')
 
@@ -65,7 +68,8 @@ def new_game():
         'currentPlayer': game.current_player,
         'winner': game.winner,
         'winningCells': [],
-        'gameEnded': game.winner is not None
+        'gameEnded': game.winner is not None,
+        'strategy_id': strategy_id
     })
 
 
@@ -98,10 +102,12 @@ def make_move():
             })
 
     # AI move
-    game = TicTacToe(3)
+    strategy_id = data.get('strategy_id', 'center_first')
+    game = TicTacToe(3, strategy_id=strategy_id)
     game.board = board
     game.current_player = 'O'
-    ai_move = game.find_best_move()
+    strategy = StrategyController.get_strategy(strategy_id)
+    ai_move = strategy.choose_move(game.board, 'O')
     if ai_move:
         ai_row, ai_col = ai_move
         game.make_move(ai_row, ai_col, 'O')
@@ -114,7 +120,8 @@ def make_move():
                 'currentPlayer': 'X',
                 'winner': winner,
                 'winningCells': winning_cells,
-                'gameEnded': True
+                'gameEnded': True,
+                'strategy_id': strategy_id
             })
 
     return jsonify({
@@ -122,7 +129,8 @@ def make_move():
         'currentPlayer': 'X',
         'winner': None,
         'winningCells': [],
-        'gameEnded': False
+        'gameEnded': False,
+        'strategy_id': strategy_id
     })
 
 # Create the database tables at startup
@@ -131,4 +139,3 @@ Base.metadata.create_all(bind=engine)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-

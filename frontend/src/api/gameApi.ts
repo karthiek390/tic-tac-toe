@@ -19,11 +19,19 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 //   return await res.json();
 // }
 
-export const startNewGame = async (firstPlayer: 'X' | 'O') => {
+/**
+ * Starts a new game with the given first player and strategy_id.
+ * @param firstPlayer - 'X' or 'O'
+ * @param strategyId - strategy_id string (optional, defaults to 'center_first')
+ */
+export const startNewGame = async (
+  firstPlayer: 'X' | 'O',
+  strategyId: string = 'center_first'
+) => {
   const response = await fetch(`${API_URL}/new-game`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', },
-    body: JSON.stringify({ firstPlayer }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ firstPlayer, strategy_id: strategyId }),
   });
 
   if (!response.ok) {

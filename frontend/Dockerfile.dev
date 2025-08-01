@@ -1,0 +1,19 @@
+# Frontend Development Dockerfile
+FROM node:18
+
+WORKDIR /app
+
+# Copy only package.json first
+COPY package*.json ./
+
+# Install all dependencies including devDependencies
+ENV NODE_ENV=development
+RUN npm install --include=dev
+
+# Copy the rest of the app
+COPY . .
+
+EXPOSE 5173
+
+# Run Vite dev server with hot reload
+CMD ["npm", "run", "dev", "--", "--host"]
